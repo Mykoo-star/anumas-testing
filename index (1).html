@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<!-- Bahasa default adalah Bahasa Inggris -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World History Portal | Digital Archive</title>
+    
+    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Marked library untuk parsing Markdown --><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- DOMPurify untuk keamanan HTML --><script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+    <!-- Google Fonts: Poppins --><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-purple': '#9F54FF', 
+                        'brand-cyan': '#39C0ED',   
+                        'main-bg': '#F9F9FC',     
+                        'card-bg': '#FFFFFF',     
+                        'main-text': '#1A1A1A',   
+                        'subtle-text': '#666666',  
+                        'brand-red': '#D21F3C',     
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; background-color: #F9F9FC; }
+        ::-webkit-scrollbar-thumb { background-color: #9F54FF; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #7f43cc; }
+        html { scroll-behavior: smooth; }
+
+        /* Markdown Styles */
+        .prose h1 { font-size: 2.25rem; font-weight: 700; color: #1A1A1A; margin-bottom: 1rem; font-family: 'Poppins', sans-serif; }
+        .prose h2 { font-size: 1.75rem; font-weight: 600; color: #1A1A1A; margin-top: 1.5rem; margin-bottom: 0.75rem; font-family: 'Poppins', sans-serif; border-bottom: 2px solid #9F54FF; padding-bottom: 0.5rem; display: inline-block; }
+        .prose h3 { font-size: 1.5rem; font-weight: 600; color: #1A1A1A; margin-top: 1.25rem; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; }
+        .prose p { margin-bottom: 1rem; line-height: 1.8; color: #666666; text-align: justify; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #666666; }
+        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; color: #666666; }
+        .prose strong { color: #9F54FF; font-weight: 600; }
+        .prose blockquote { border-left: 4px solid #9F54FF; padding-left: 1rem; font-style: italic; color: #666666; background-color: #F9F9FC; padding: 1rem; border-radius: 0 8px 8px 0; }
+        .prose a { color: #39C0ED; text-decoration: underline; }
+        
+        /* Styling untuk Gambar Hero Dokumentasi */
+        .prose .figure-hero {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            border-radius: 8px; /* Sudut membulat */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            background-color: #FFFFFF;
+        }
+        .prose .figure-hero img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 450px; /* Batas tinggi */
+            margin: 0;
+            aspect-ratio: 16 / 9; /* Rasio widescreen */
+            object-fit: cover;
+        }
+        .prose .figure-hero figcaption {
+            font-size: 0.8rem; /* 13px */
+            color: #666666; /* subtle-text */
+            padding: 0.6rem 0.75rem;
+            text-align: center;
+            background-color: #F9F9FC; /* main-bg */
+            margin: 0;
+            line-height: 1.4;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Loader Animation */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #9F54FF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Efek Glowing Blob */
+        .gradient-blob {
+            position: absolute; width: 400px; height: 400px;
+            border-radius: 50%; filter: blur(100px);
+            opacity: 0.15; z-index: 0;
+            animation: moveBlob 15s infinite alternate;
+        }
+        .blob-1 { background: radial-gradient(circle, #9F54FF, transparent 60%); top: -100px; left: -150px; }
+        .blob-2 { background: radial-gradient(circle, #39C0ED, transparent 60%); bottom: -50px; right: -150px; animation-delay: 5s; }
+        @keyframes moveBlob {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        /* Styling untuk Foto Tokoh (Inline/Float) */
+        .prose .figure-inline {
+            float: right;
+            width: 180px; /* Lebar yang pas */
+            margin-left: 1.5rem; /* Jarak dari teks di kiri */
+            margin-bottom: 1rem; /* Jarak dari teks di bawah */
+            margin-top: 0.5rem;
+            border-radius: 8px; /* Sudut membulat */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            background-color: #FFFFFF;
+        }
+        .prose .figure-inline img {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0;
+            aspect-ratio: 3 / 4; /* Rasio potret */
+            object-fit: cover;
+        }
+        .prose .figure-inline figcaption {
+            font-size: 0.75rem; /* 12px */
+            color: #666666; /* subtle-text */
+            padding: 0.5rem;
+            text-align: center;
+            background-color: #F9F9FC; /* main-bg */
+            margin: 0;
+            line-height: 1.4;
+            border-top: 1px solid #e2e8f0;
+        }
+        /* clearfix untuk menghentikan float */
+        .prose p:after, .prose h2:after, .prose h3:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Styling untuk Tabel Markdown */
+        .prose table {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            border-collapse: separate; 
+            border-spacing: 0;
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
+        }
+        .prose thead { background-color: #F9F9FC; }
+        .prose th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1A1A1A;
+            font-family: 'Poppins', sans-serif;
+            border-bottom: 2px solid #9F54FF; 
+        }
+        .prose tbody tr { border-bottom: 1px solid #e2e8f0; }
+        .prose tbody tr:last-child { border-bottom: none; }
+        .prose tbody tr:hover { background-color: #F9F9FC; }
+        .prose td {
+            padding: 0.75rem 1rem;
+            color: #666666;
+            line-height: 1.6;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<!-- Menambahkan 'antialiased' untuk font yang lebih halus -->
+<body class="bg-main-bg min-h-screen flex flex-col font-sans text-main-text overflow-x-hidden antialiased">
+
+    <!-- Notification Element -->
+    <div id="notification" class="hidden fixed top-20 right-5 z-[100] px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300">
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-card-bg/80 backdrop-blur-sm text-main-text shadow-sm sticky top-0 z-50 border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-brand-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-cyan">World History Portal</h1>
+                    <p class="text-xs text-subtle-text opacity-70">Unveiling the World's Past</p>
+                </div>
+            </div>
+            <div class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                AI Connected
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-12 max-w-4xl relative z-10">
+
+        <!-- Efek Blob Latar Belakang -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+            <div class="gradient-blob blob-1"></div>
+            <div class="gradient-blob blob-2"></div>
+        </div>
+
+        <!-- Empty State / Hero Info -->
+        <div id="emptyState" class="text-center py-10 px-6">
+             <h2 class="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 via-brand-purple to-brand-cyan">
+                EXPLORE THE PAST
+            </h2>
+            <p class="text-subtle-text text-lg mb-12 max-w-2xl mx-auto">Enter a topic, person, or event. Let our AI guide you through time.</p>
+        </div>
+
+        <!-- Hero / Search Section -->
+        <!-- Membungkus seluruh area pencarian dalam kartu yang rapi -->
+        <div class="text-center mb-12 mt-12 bg-card-bg rounded-2xl shadow-xl overflow-hidden border-t-4 border-brand-purple p-8 md:p-12">
+            
+            <!-- Pilihan Bahasa -->
+            <div class="mb-6 max-w-md mx-auto">
+                <label for="languageSelector" class="block text-sm font-medium text-subtle-text text-center mb-2">Select Article Display Language:</label>
+                <select id="languageSelector" onchange="translateContent()" class="w-full px-4 py-2 bg-card-bg border-2 border-gray-200 rounded-lg focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/50 transition shadow-sm">
+                    <option value="en" selected>English (Default)</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="fr">Français (French)</option>
+                    <option value="de">Deutsch (German)</option>
+                    <option value="ja">日本語 (Japanese)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="zh">中文 (Mandarin)</option>
+                    <option value="ko">한국어 (Korean)</option>
+                </select>
+            </div>
+
+            <h2 class="text-2xl font-bold text-main-text mb-6">Start Your Search</h2>
+            
+            <div class="relative max-w-2xl mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" 
+                    class="block w-full pl-12 pr-4 py-4 bg-card-bg border-2 border-gray-200 rounded-full leading-5 text-main-text placeholder-gray-400 focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/50 transition duration-300 shadow-lg text-lg focus:shadow-brand-purple/20"
+                    placeholder="Example: French Revolution, Genghis Khan, Roman Empire..."
+                    onkeypress="handleEnter(event)">
+                <button onclick="searchHistory()" class="absolute inset-y-1 right-1 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-opacity-80 transition duration-300 font-medium shadow-md flex items-center">
+                    Search
+                </button>
+            </div>
+            <!-- Suggestion Chips -->
+            <div class="mt-4 flex flex-wrap justify-center gap-2">
+                <button onclick="setQuery('History of World War II')" class="px-3 py-1 bg-card-bg border border-gray-200 rounded-full text-sm text-subtle-text hover:border-brand-purple hover:text-brand-purple transition">World War II</button>
+                <button onclick="setQuery('History of the Industrial Revolution')" class="px-3 py-1 bg-card-bg border border-gray-200 rounded-full text-sm text-subtle-text hover:border-brand-purple hover:text-brand-purple transition">Industrial Revolution</button>
+                <button onclick="setQuery('History of the Cold War')" class="px-3 py-1 bg-card-bg border border-gray-200 rounded-full text-sm text-subtle-text hover:border-brand-purple hover:text-brand-purple transition">Cold War</button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden flex-col items-center justify-center py-12">
+            <div class="loader mb-4"></div>
+            <p id="loadingText" class="text-subtle-text font-medium animate-pulse">Opening the pages of history...</p>
+            <p class="text-xs text-gray-500 mt-2">Finding relevant information and visuals.</p>
+        </div>
+
+        <!-- Result Content -->
+        <div id="resultContainer" class="hidden bg-card-bg rounded-2xl shadow-xl overflow-hidden border-t-4 border-brand-purple">
+            <div class="p-10 md:p-12">
+                
+                <!-- Main Article -->
+                <article id="contentBody" class="prose max-w-none">
+                    <!-- Content injected via JS -->
+                </article>
+
+                <!-- Bagian Sumber Referensi -->
+                <div id="sourcesContainer" class="mb-6 hidden mt-10 border-t border-gray-200 pt-6">
+                    <button id="sourcesToggleBtn" class="flex justify-between items-center w-full text-left cursor-pointer group py-2">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider group-hover:text-brand-purple transition-colors">Reference Sources:</h4>
+                        <svg id="sourcesChevron" class="h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-brand-purple" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="sourcesList" class="space-y-2 mt-2 hidden"></div>
+                </div>
+            </div>
+            <div class="bg-main-bg px-8 py-4 border-t border-gray-200 flex justify-between items-center">
+                <span class="text-xs text-subtle-text/70 italic">Powered by Gemini AI with Google Search Grounding</span>
+                <button onclick="copyContent()" class="text-sm text-brand-purple font-semibold hover:underline flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy Text
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-card-bg text-subtle-text py-8 mt-auto border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2 font-medium bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-cyan">World History Portal</p>
+            <p class="text-sm text-subtle-text/70">"History is the teacher of life." - Cicero</p>
+            <div class="mt-4 text-xs text-subtle-text/70">
+                &copy; 2023 Powered by Google Gemini.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Konfigurasi awal
+        const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+        // Kunci API dikosongkan agar diisi oleh Canvas runtime
+        const GEMINI_API_KEY = ""; 
+
+        // Konfigurasi Google Custom Search
+        const GOOGLE_SEARCH_API_URL = "https://www.googleapis.com/customsearch/v1";
+        // GANTI DENGAN ID CX ANDA
+        const GOOGLE_CX_ID = "92ac757e6b2e64d20"; 
+
+        // Referensi UI
+        const searchInput = document.getElementById('searchInput');
+        const resultContainer = document.getElementById('resultContainer');
+        const emptyState = document.getElementById('emptyState');
+        const loadingState = document.getElementById('loadingState');
+        const loadingText = document.getElementById('loadingText');
+        const contentBody = document.getElementById('contentBody');
+        const sourcesContainer = document.getElementById('sourcesContainer');
+        const sourcesList = document.getElementById('sourcesList');
+        const sourcesToggleBtn = document.getElementById('sourcesToggleBtn');
+        const sourcesChevron = document.getElementById('sourcesChevron');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const languageSelector = document.getElementById('languageSelector');
+        let notificationTimeout;
+
+        // Variabel State
+        let currentMarkdownArticle = ""; // Menyimpan Markdown asli (dengan tag [FIGUR:...])
+        let currentFigureImageObjects = null;  // Menyimpan data gambar tokoh
+        let currentDocImageObject = null; // Menyimpan gambar dokumentasi
+        let currentLanguage = "en";
+ 
+        /**
+         * Mengatur nilai input pencarian dan memulai pencarian.
+         */
+        function setQuery(text) {
+            searchInput.value = text;
+            searchHistory();
+        }
+
+        /**
+         * Menangani penekanan tombol Enter di input pencarian.
+         */
+        function handleEnter(e) {
+            if (e.key === 'Enter') searchHistory();
+        }
+ 
+        /**
+         * Mengambil SATU gambar potret untuk seorang tokoh dengan pemeriksaan relevansi.
+         */
+        async function fetchFigureImage(figureName) {
+            if (!GOOGLE_CX_ID || GOOGLE_CX_ID === "YOUR_CUSTOM_SEARCH_ENGINE_ID_HERE") {
+                console.warn("Google CX ID not set. Figure images will not be loaded.");
+                return null;
+            }
+            const searchQuery = `${figureName} portrait OR photo OR painting`;
+            const url = new URL(GOOGLE_SEARCH_API_URL);
+            url.searchParams.append('key', GEMINI_API_KEY);
+            url.searchParams.append('cx', GOOGLE_CX_ID);
+            url.searchParams.append('q', searchQuery);
+            url.searchParams.append('searchType', 'image');
+            url.searchParams.append('num', 1);
+            url.searchParams.append('safe', 'high');
+            url.searchParams.append('imgSize', 'MEDIUM'); 
+            url.searchParams.append('imgType', 'face'); 
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    const item = data.items[0];
+
+                    // Pemeriksaan Relevansi
+                    const pageTitle = item.title.toLowerCase();
+                    const pageSnippet = (item.snippet || "").toLowerCase();
+                    const figureNameLower = figureName.toLowerCase();
+
+                    // Cek jika nama tokoh ada di judul ATAU snippet
+                    if (pageTitle.includes(figureNameLower) || pageSnippet.includes(figureNameLower)) {
+                        return {
+                            imgUrl: item.link,
+                            sourceUrl: item.image.contextLink,
+                            sourceTitle: item.title,
+                            figureName: figureName 
+                        };
+                    } else {
+                        // Jika tidak relevan, tolak gambar
+                        console.warn(`REJECTED (irrelevant) figure image for '${figureName}'. Title: '${item.title}'`);
+                        return null;
+                    }
+                }
+                console.log('Google Search found no image for figure:', searchQuery);
+                return null;
+            } catch (error) {
+                console.error("Error fetching figure image:", error);
+                return null;
+            }
+        }
+
+        /**
+         * Mengambil SATU gambar dokumentasi/umum dengan pemeriksaan relevansi.
+         */
+        async function fetchDocumentationImage(queryKeyword) {
+            if (!GOOGLE_CX_ID || GOOGLE_CX_ID === "YOUR_CUSTOM_SEARCH_ENGINE_ID_HERE") {
+                console.warn("Google CX ID not set. Doc images will not be loaded.");
+                return null;
+            }
+            // Kueri pencarian yang lebih spesifik
+            const searchQuery = `${queryKeyword} history OR event OR map OR artifact OR painting`;
+            const url = new URL(GOOGLE_SEARCH_API_URL);
+            url.searchParams.append('key', GEMINI_API_KEY);
+            url.searchParams.append('cx', GOOGLE_CX_ID);
+            url.searchParams.append('q', searchQuery);
+            url.searchParams.append('searchType', 'image');
+            url.searchParams.append('num', 1);
+            url.searchParams.append('safe', 'high');
+            url.searchParams.append('imgSize', 'LARGE'); // Meminta gambar besar
+            url.searchParams.append('imgType', 'photo');
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    const item = data.items[0];
+
+                    // Pemeriksaan Relevansi
+                    const pageTitle = item.title.toLowerCase();
+                    const pageSnippet = (item.snippet || "").toLowerCase();
+                    
+                    // Ekstrak kata kunci utama dari kueri AI (buang kata-kata umum)
+                    const keywords = queryKeyword.toLowerCase().split(' ').filter(k => k.length > 3 && !['history', 'painting', 'map', 'event', 'of', 'the'].includes(k));
+                    
+                    let isRelevant = false;
+                    if (keywords.length === 0) {
+                        isRelevant = true; // Jika tidak ada kata kunci, anggap relevan
+                    } else {
+                        // Cek jika SALAH SATU kata kunci ada di judul atau snippet
+                        isRelevant = keywords.some(k => pageTitle.includes(k) || pageSnippet.includes(k));
+                    }
+
+                    if (isRelevant) {
+                        return {
+                            imgUrl: item.link,
+                            sourceUrl: item.image.contextLink,
+                            sourceTitle: item.title,
+                            query: queryKeyword
+                        };
+                    } else {
+                        // Jika tidak relevan, tolak gambar
+                        console.warn(`REJECTED (irrelevant) doc image for '${queryKeyword}'. Title: '${item.title}'`);
+                        return null;
+                    }
+                }
+                console.log('Google Search found no image for doc:', searchQuery);
+                return null;
+            } catch (error) { // <-- PERBAIKAN: Menambahkan {
+                console.error("Error fetching doc image:", error);
+                return null;
+            } // <-- PERBAIKAN: Menambahkan }
+        }
+
+
+        /**
+         * Merender Markdown, Gambar Hero, DAN Gambar Tokoh.
+         */
+        function renderArticle(markdown, figureImages, docImage) {
+            // 1. Render Markdown ke HTML
+            let cleanHtml = DOMPurify.sanitize(marked.parse(markdown));
+
+            // 2. Inject Documentation Hero Image (jika ada)
+            if (docImage) {
+                const docImageHtml = `
+                    <figure class="figure-hero">
+                        <a href="${docImage.sourceUrl}" target="_blank" rel="noopener noreferrer" title="View image source: ${docImage.sourceTitle}">
+                            <img src="${docImage.imgUrl}" alt="Documentation image: ${docImage.query}" onerror="this.style.display='none'">
+                        </a>
+                        <figcaption>
+                            ${docImage.query}
+                            <a href="${docImage.sourceUrl}" target="_blank" rel="noopener noreferrer" class="text-brand-purple hover:underline">(Source)</a>
+                        </figcaption>
+                    </figure>
+                `;
+                // Cari dan ganti tag [GAMBAR: ...]
+                const docRegex = new RegExp(`\\[GAMBAR:\\s*${docImage.query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\]`);
+                cleanHtml = cleanHtml.replace(docRegex, docImageHtml);
+            }
+            // Hapus tag gambar yang mungkin tersisa
+            cleanHtml = cleanHtml.replace(/\[GAMBAR:\s*(.*?)\]/g, '');
+
+
+            // 3. Inject Figure Images (jika ada)
+            if (figureImages && figureImages.length > 0) {
+                figureImages.forEach(imgObject => {
+                    if (!imgObject) return; // Lewati jika gambar tidak relevan (null)
+                    
+                    const figureHtml = `
+                        <figure class="figure-inline">
+                            <a href="${imgObject.sourceUrl}" target="_blank" rel="noopener noreferrer" title="View image source: ${imgObject.sourceTitle}">
+                                <img src="${imgObject.imgUrl}" alt="Image of ${imgObject.figureName}" onerror="this.style.display='none'">
+                            </a>
+                            <figcaption>
+                                ${imgObject.figureName}
+                                <a href="${imgObject.sourceUrl}" target="_blank" rel="noopener noreferrer" class="text-brand-purple hover:underline">(Source)</a>
+                            </figcaption>
+                        </figure>
+                    `;
+
+                    // Ganti kemunculan PERTAMA saja
+                    const escapedName = imgObject.figureName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`\\[FIGUR:\\s*${escapedName}\\s*\\]`);
+                    
+                    if (cleanHtml.includes(`[FIGUR: ${imgObject.figureName}]`)) {
+                         cleanHtml = cleanHtml.replace(regex, figureHtml);
+                    }
+                });
+            }
+            
+            // 4. Masukkan HTML final ke body
+            contentBody.innerHTML = cleanHtml;
+            
+            // 5. Hapus tag [FIGUR: ...] yang mungkin tersisa (untuk kemunculan kedua, ketiga, dst.)
+            contentBody.innerHTML = contentBody.innerHTML.replace(/\[FIGUR:\s*(.*?)\]/g, '');
+        }
+
+        /**
+         * Menampilkan notifikasi non-blocking.
+         */
+        function showNotification(message, type = 'success') {
+            if (notificationTimeout) clearTimeout(notificationTimeout);
+            notificationText.innerText = message;
+            notification.style.backgroundColor = (type === 'error') ? '#D21F3C' : '#22c55e';
+            notification.classList.remove('hidden');
+            notification.classList.add('opacity-100');
+            notificationTimeout = setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('opacity-100');
+            }, 3000);
+        }
+
+        // Event listener untuk collapsible sumber
+        sourcesToggleBtn.addEventListener('click', () => {
+            sourcesList.classList.toggle('hidden');
+            sourcesChevron.classList.toggle('rotate-180');
+        });
+
+
+        /**
+         * Fungsi utama untuk mencari sejarah (Default Bahasa Inggris)
+         */
+        async function searchHistory() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            // Reset UI dan State
+            emptyState.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex');
+            loadingText.innerText = "Opening the pages of history..."; 
+            sourcesContainer.classList.add('hidden');
+            contentBody.innerHTML = '';
+            sourcesList.classList.add('hidden');
+            sourcesChevron.classList.remove('rotate-180');
+            
+            currentMarkdownArticle = "";
+            currentFigureImageObjects = null; 
+            currentDocImageObject = null; 
+            currentLanguage = "en";
+            languageSelector.value = "en"; 
+
+            // Instruksi Sistem untuk AI
+            const systemInstruction = `You are an expert World Historian, professional, academic, yet capable of explaining in language that is easy to understand.
+            
+            **IMPORTANT: You are a historical archive portal. Your SOLE purpose is to provide in-depth, comprehensive, and accurate information about history.**
+
+            Your Tasks:
+            1. **Query Validation (CRITICAL):** First, analyze the user's query ("${query}").
+               - If the query is about a historical topic, event, person, or era, proceed.
+               - **If the query is NOT about history (e.g., science, technology, sports, current news), you MUST refuse the request.**
+
+            2. **Refusal Protocol:** If the query is not history-related, your ENTIRE response MUST be the following Markdown (in English):
+               # Request Denied
+               I apologize, but my function is strictly limited to providing information about **world history**. I am unable to process requests on other topics. Please try a history-related query.
+
+            3. **Historical Search (If Valid):** If the query is valid, use its search tools extensively. You should **cross-verify facts using multiple search results** to ensure the highest level of accuracy and neutrality.
+            
+            4. **Article Writing (If Valid):** Write a **highly detailed, in-depth, and comprehensive** historical article in Markdown Format (in English). Do not write a brief summary; write a full, informative piece.
+            
+            5. **Article Structure (PENTING):** The article MUST be clearly organized with the following H2 headings (##) in this exact order:
+               - A Main Title (H1)
+               - ## Background
+               - ## Main Events (Content)
+               - ## Impact and Significance
+               - ## Key Figures Involved
+               - ## Conclusion
+               (Use these exact English headings).
+               
+               **Formatting Note:** For the 'Key Figures Involved' section, you MUST use a bulleted list (-) to introduce each figure and their role. This improves readability.
+               
+            6. **Content Requirements:**
+               - **Accuracy & Verification:** All information, especially dates, names, and numbers, must be factual and **cross-verified** using the search tools. Strive for an objective, neutral tone.
+               - **Depth & Context:** The 'Background' must analyze the *causes* (social, political, economic). The 'Impact' must analyze the *consequences* and long-term significance.
+               - **Detail & Completeness:** Include specific dates, key tactical details, important quotes (if relevant), and **specific, lesser-known facts** that demonstrate true depth beyond common knowledge.
+
+            7. **Formatting:** Use bold for important names of figures or events.
+            
+            8. **Figure Image Tagging (PENTING):** When you mention a key historical figure for the first time, tag them *immediately* after their name with the format [FIGUR: Full Name].
+               - Example: '...the rise of **Napoleon Bonaparte [FIGUR: Napoleon Bonaparte]**.'
+               - Do this for up to 4 most important figures.
+
+            9. **Documentation Image Tag (PENTING):** You MUST insert ONE tag for a general documentation photo (battle, map, artifact).
+               - Format: [GAMBAR: Specific Event Name or Map]
+               - Example: [GAMBAR: Battle of Waterloo painting]
+               - **Place this tag at the very top of the article, *before* the H1 title.**
+            `;
+
+            // Kueri yang dipaksa
+            const forcedQuery = `Please provide an in-depth, detailed, and comprehensive historical analysis of: "${query}". 
+            
+            **IMPORTANT: Use Google Search (tools) to find specific facts, dates, causes, and consequences. Cross-verify the information.**
+            I need a full, detailed article, not a short summary.
+            Follow the required article structure (Background, Main Events, Impact, Key Figures, Conclusion).
+            Place ONE [GAMBAR: ...] tag at the very top.
+            And tag up to 4 key figures with [FIGUR: Name].`;
+
+            const payload = {
+                contents: [{ parts: [{ text: forcedQuery }] }],
+                tools: [{ google_search: {} }], 
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            // Logika retry
+            let response;
+            let attempts = 0;
+            const maxAttempts = 3;
+            const initialBackoff = 1000;
+            while (attempts < maxAttempts) {
+                try {
+                    response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) break;
+                    if (response.status === 429 || response.status >= 500) {
+                        const backoff = initialBackoff * Math.pow(2, attempts);
+                        await new Promise(resolve => setTimeout(resolve, backoff + Math.random() * 1000));
+                        attempts++;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error.message);
+                    }
+                } catch (error) {
+                    const backoff = initialBackoff * Math.pow(2, attempts);
+                    await new Promise(resolve => setTimeout(resolve, backoff + Math.random() * 1000));
+                    attempts++;
+                }
+            }
+            
+            if (!response || !response.ok) {
+                 loadingState.classList.add('hidden');
+                 loadingState.classList.remove('flex');
+                 showNotification(`Failed to contact server after ${maxAttempts} attempts.`, 'error');
+                 emptyState.classList.remove('hidden');
+                 return;
+            }
+
+            try {
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                if (!data.candidates || data.candidates.length === 0) {
+                     let errorMessage = "Response from AI was blocked or empty.";
+                     if (data.promptFeedback && data.promptFeedback.blockReason) {
+                         errorMessage = `Request blocked due to: ${data.promptFeedback.blockReason}`;
+                     }
+                     throw new Error(errorMessage);
+                }
+                const candidate = data.candidates[0];
+                if (candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
+                     throw new Error(`Generation stopped due to: ${candidate.finishReason}`);
+                }
+
+                if (candidate) {
+                    let rawText = candidate.content.parts[0].text;
+                    
+                    // Ekstrak Gambar Dokumentasi
+                    const docImageMatch = rawText.match(/\[GAMBAR:\s*(.*?)\]/);
+                    let fetchedDocImageObject = null;
+                    if (docImageMatch && docImageMatch[1]) {
+                        const docQuery = docImageMatch[1].trim();
+                        fetchedDocImageObject = await fetchDocumentationImage(docQuery);
+                    }
+
+                    // Ekstrak Gambar Tokoh
+                    const figureMatches = [...rawText.matchAll(/\[FIGUR:\s*(.*?)\]/g)];
+                    let fetchedImageObjects = null;
+                    if (figureMatches.length > 0) {
+                        const uniqueFigureNames = [...new Set(figureMatches.map(match => match[1].trim()))];
+                        const imagePromises = uniqueFigureNames.slice(0, 4).map(name => fetchFigureImage(name));
+                        fetchedImageObjects = (await Promise.all(imagePromises)).filter(Boolean); // Filter null
+                    }
+                    
+                    // Simpan state
+                    currentMarkdownArticle = rawText;
+                    currentFigureImageObjects = fetchedImageObjects;
+                    currentDocImageObject = fetchedDocImageObject;
+                    
+                    // Render
+                    renderArticle(currentMarkdownArticle, currentFigureImageObjects, currentDocImageObject);
+
+                    // Handle Sumber (Grounding)
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sourcesList.innerHTML = '';
+                        const uniqueSources = new Set();
+                        groundingMetadata.groundingAttributions.forEach(source => {
+                            if (source.web && source.web.title && source.web.uri && !uniqueSources.has(source.web.uri)) {
+                                uniqueSources.add(source.web.uri);
+                                const linkItem = document.createElement('a');
+                                linkItem.href = source.web.uri;
+                                linkItem.target = "_blank";
+                                linkItem.className = "block w-full text-sm text-brand-purple hover:underline p-2 bg-main-bg hover:bg-opacity-50 rounded-md transition truncate";
+                                let domain = 'source';
+                                try { domain = new URL(source.web.uri).hostname.replace('www.', ''); } catch (e) {}
+                                linkItem.textContent = `${source.web.title} (${domain})`;
+                                sourcesList.appendChild(linkItem);
+                            }
+                        });
+                        if (uniqueSources.size > 0) {
+                            sourcesContainer.classList.remove('hidden');
+                        }
+                    }
+
+                    // Tampilkan Hasil
+                    loadingState.classList.add('hidden');
+                    loadingState.classList.remove('flex');
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    throw new Error("No response from AI.");
+                }
+
+            } catch (error) {
+                loadingState.classList.add('hidden');
+                loadingState.classList.remove('flex');
+                console.error("An error occurred:", error);
+                showNotification(`An error occurred: ${error.message}`, 'error');
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Menerjemahkan konten artikel yang ada menggunakan Gemini.
+         */
+        async function translateContent() {
+            const targetLanguage = languageSelector.value;
+            
+            if (!currentMarkdownArticle) {
+                showNotification("Please search for a topic before translating.", 'error');
+                languageSelector.value = currentLanguage; 
+                return;
+            }
+
+            if (targetLanguage === currentLanguage) return; 
+
+            // Jika kembali ke Bahasa Inggris, gunakan Markdown asli
+            if (targetLanguage === 'en') {
+                currentLanguage = 'en';
+                renderArticle(currentMarkdownArticle, currentFigureImageObjects, currentDocImageObject); 
+                showNotification("Display reset to English.", 'success');
+                return;
+            }
+
+            // Proses Terjemahan (API Call)
+            emptyState.classList.add('hidden');
+            resultContainer.classList.add('hidden'); 
+            loadingState.classList.remove('hidden');
+            loadingState.classList.add('flex');
+            loadingText.innerText = "Translating article..."; 
+
+            const systemInstruction = `You are an expert translator. Translate the following Markdown text to the target language.
+            IMPORTANT:
+            1. Preserve all Markdown formatting (like #, ##, *, **, -) AND all special tags like [FIGUR: ...] and [GAMBAR: ...] perfectly.
+            2. Only output the translated text. DO NOT add any commentary.
+            3. Translate all text, including titles and content, but NOT the text inside [FIGUR: ...] or [GAMBAR: ...] tags.`;
+            
+            const forcedQuery = `Please translate the following Markdown text from English to the language with code: "${targetLanguage}"\n\n---\n\n${currentMarkdownArticle}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: forcedQuery }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            // Logika retry
+            let response;
+            let attempts = 0;
+            const maxAttempts = 3;
+            const initialBackoff = 1000;
+            while (attempts < maxAttempts) {
+                try {
+                    response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) break;
+                    if (response.status === 429 || response.status >= 500) {
+                        const backoff = initialBackoff * Math.pow(2, attempts);
+                        await new Promise(resolve => setTimeout(resolve, backoff + Math.random() * 1000));
+                        attempts++;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error.message);
+                    }
+                } catch (error) {
+                    const backoff = initialBackoff * Math.pow(2, attempts);
+                    await new Promise(resolve => setTimeout(resolve, backoff + Math.random() * 1000));
+                    attempts++;
+                }
+            }
+
+            try {
+                if (!response || !response.ok) {
+                     throw new Error(`Failed to contact server after ${maxAttempts} attempts.`);
+                }
+
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error.message);
+                if (!data.candidates || data.candidates.length === 0) {
+                     let errorMessage = "Translation response was blocked or empty (safety).";
+                     if (data.promptFeedback && data.promptFeedback.blockReason) {
+                         errorMessage = `Request blocked due to: ${data.promptFeedback.blockReason}`;
+                     }
+                     throw new Error(errorMessage);
+                }
+                const candidate = data.candidates[0];
+                if (candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
+                     throw new Error(`Translation generation stopped due to: ${candidate.finishReason}`);
+                }
+
+                const translatedMarkdown = candidate.content.parts[0].text;
+                
+                // Render konten yang diterjemahkan
+                renderArticle(translatedMarkdown, currentFigureImageObjects, currentDocImageObject);
+                
+                currentLanguage = targetLanguage; // Set bahasa baru
+                showNotification(`Article translated successfully.`, 'success');
+
+            } catch (error) {
+                console.error("Error during translation:", error);
+                showNotification(`Failed to translate: ${error.message}`, 'error');
+                // Jika gagal, tampilkan lagi artikel aslinya
+                renderArticle(currentMarkdownArticle, currentFigureImageObjects, currentDocImageObject);
+                languageSelector.value = currentLanguage; // Reset dropdown
+            } finally {
+                loadingState.classList.add('hidden');
+                loadingState.classList.remove('flex');
+                resultContainer.classList.remove('hidden'); 
+                loadingText.innerText = "Opening the pages of history..."; // Reset teks loading
+            }
+        }
+
+
+        /**
+         * Menyalin konten teks dari artikel.
+         */
+        function copyContent() {
+            const textToCopy = contentBody.innerText;
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0"; 
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (successful) {
+                    showNotification("Text copied successfully!", 'success');
+                } else {
+                    throw new Error('Failed to copy with document.execCommand');
+                }
+            } catch (err) {
+                console.error('Failed to copy (execCommand):', err);
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showNotification("Text copied successfully!", 'success');
+                    }).catch(clipErr => {
+                        console.error('Failed to copy (navigator.clipboard):', clipErr);
+                        showNotification('Failed to copy text.', 'error');
+                    });
+                } else {
+                    showNotification('Failed to copy text.', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
